@@ -1,6 +1,10 @@
+def validar_quantidade(quantidade):
+    if type(quantidade) is not int or quantidade <= 0:
+        raise ValueError("Informe uma quantidade inteira maior que zero.")
+
+
 def calcular_novo_saldo(saldo_atual, tipo, quantidade):
-    if quantidade <= 0:
-        raise ValueError("A quantidade deve ser maior que zero.")
+    validar_quantidade(quantidade)
 
     if tipo == "entrada":
         return saldo_atual + quantidade
@@ -10,4 +14,4 @@ def calcular_novo_saldo(saldo_atual, tipo, quantidade):
             raise ValueError("Saldo insuficiente para a saída.")
         return saldo_atual - quantidade
 
-    raise ValueError("Informe entrada ou saida.")
+    raise ValueError("Tipo de movimentação inválido. Use entrada ou saida.")

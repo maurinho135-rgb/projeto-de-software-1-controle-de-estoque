@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Controle de Estoque</title>
+  <style>
+    body { max-width: 760px; margin: auto; padding: 16px; background: #fff;
+           color: #17212b; font: 1rem/1.5 system-ui, sans-serif; }
+    section { border: 1px solid currentColor; padding: 16px; margin: 16px 0; }
+    label { display: block; font-weight: bold; }
+    input, select, button { box-sizing: border-box; min-height: 44px;
+      max-width: 100%; font: inherit; color: inherit; background: inherit;
+      border: 2px solid currentColor; padding: 6px 10px; }
+    button { cursor: pointer; }
+    :focus-visible { outline: 3px solid #1759bc; outline-offset: 3px; }
+    body.contraste { background: #000; color: #ffeb60; }
+    body.contraste :focus-visible { outline-color: #fff; }
+  </style>
+</head>
+<body>
+  <h1>Controle de Estoque</h1>
+  <button type="button" id="contraste" aria-pressed="false">Alto contraste</button>
+  <span id="estado" role="status">Alto contraste desativado</span>
+
+  {% if resultado == "produto" %}
+    <p role="status"><strong>Produto cadastrado.</strong></p>
+  {% elif resultado == "movimentacao" %}
+    <p role="status"><strong>Movimentação registrada.</strong></p>
+  {% endif %}
+
+  <section>
+    <h2>Produtos e saldos</h2>
+    <ul>
+      {% for produto in produtos %}
+        <li>{{ produto.nome }} — saldo: {{ produto.saldo }} unidades</li>
+      {% empty %}
+        <li>Nenhum produto cadastrado.</li>
+      {% endfor %}
+    </ul>
+    <form method="post">
+      {% csrf_token %}
+      {{ cadastro.as_p }}
+      <button name="acao" value="cadastro">Cadastrar produto</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Registrar movimentação</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ registro.as_p }}
+      <button name="acao" value="registro">Confirmar movimentação</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Histórico recente</h2>
+    <ul>
+      {% for item in historico %}
+        <li>{{ item.produto.nome }} — {{ item.get_tipo_display }}:
+          {{ item.quantidade }} unidades — {{ item.criada_em|date:"d/m/Y H:i" }}</li>
+      {% empty %}
+        <li>Nenhuma movimentação registrada.</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <script>
+    const botao = document.getElementById("contraste");
+    botao.addEventListener("click", () => {
+      const ativo = document.body.classList.toggle("contraste");
+      botao.setAttribute("aria-pressed", String(ativo));
+      document.getElementById("estado").textContent =
+        ativo ? "Alto contraste ativado" : "Alto contraste desativado";
+    });
+  </script>
+</body>
+</html>
